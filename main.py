@@ -57,9 +57,9 @@ def compute_loss(batch, dqn, target_dqn, gamma):
     states, actions, rewards, next_states, dones = zip(*batch)
 
     states = torch.cat(states)
-    actions = torch.cat(actions)
-    rewards = torch.cat(rewards)
     next_states = torch.cat(next_states)
+    actions = torch.cat(actions).unsqueeze(1)  # Add unsqueeze to make actions a column vector
+    rewards = torch.cat(rewards)
     dones = torch.cat(dones)
 
     current_q_values = dqn(states).gather(1, actions)
@@ -68,6 +68,7 @@ def compute_loss(batch, dqn, target_dqn, gamma):
 
     loss = F.mse_loss(current_q_values, expected_q_values.unsqueeze(1))
     return loss
+
 
 def preprocess(frame, new_width=84, new_height=84):
     # If frame is not a NumPy array, attempt conversion
